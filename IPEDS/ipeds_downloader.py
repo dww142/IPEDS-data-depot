@@ -282,7 +282,8 @@ def __main__():
                 print("Download Complete: ", meta_result)
                 log[survey][file_code][survey_year] = meta_result
             
-            write_years_to_table(file_code, log[survey][file_code])
+            if settings.WRITE_TO_TABLE:
+                write_years_to_table(file_code, log[survey][file_code])
             
             #once you have all years, start consolidating the separate files:
             # print('Start Consolidation')
