@@ -1,15 +1,17 @@
-"""
+'''
 Script to download complete data files from the IPEDS Data Center and consolidate multiple years
-of data for each file into a single consolidated datafile.
+of data for each file into a single consolidated Pandas dataframe.
 
-ON EACH RUN:
-    In the __main__() method - adjust the commented section defining the surveys to be
-        downloaded on the current run, this is really meant to be run from the script with that
-        section changing on each year; 
-        NOTE that different files align with academic years differently - defined in comments
-        in the main method. 
+Uses Pandas to read data files into data frames and concatenate the frames together into a single
+frame with all of the various columns across years as they change in IPEDS files in a single frame.
 
-"""
+That frame is inserted into an MS SQL Server database table where Views perform further 
+cleansing, transformation, and integration of the data sets in each file. 
+
+configure all options in the settings file including database connection information, 
+desired surveys to download, start/end years for surveys.
+
+'''
 import os
 import datetime as dt
 import zipfile
@@ -21,58 +23,89 @@ import pandas as pd
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declarative_base
 
-ENGINE = sa.create_engine('mssql+pyodbc://sql_alchemy:sql_alchemy@LOCALHOST/SLDS_ETL?driver=SQL+Server+Native+Client+11.0')
-
-#trying go figure out the best way to read/write data for importing to SQL Server
-READ_ENCODING = 'ISO-8859-1' #'utf-8' #'ISO-8859-1'
-WRITE_ENCODING = 'latin-1'
-DATABASE_SCHEMA = 'IPEDS'
 
 def table_column_metadata(file_code):
     '''
-    get the column names and data types for the ETL column matching
-    the IPEDS survey file provided
+    Get the column names and data types from an existing SQL Server database table
+    for the specified IPEDS survey file. 
     '''
     # from sqlalchemy.ext.declarative import declarative_base
     base = declarative_base()
-    base.metadata.reflect(ENGINE, schema=DATABASE_SCHEMA)
+    base.metadata.reflect(settings.ENGINE, schema=settings.TARGET_SCHEMA)
     cols = {}
-    for c in base.metadata.tables[DATABASE_SCHEMA + '.tbl' + file_code].columns:
+    for c in base.metadata.tables[settings.TARGET_SCHEMA + '.tbl' + file_code].columns:
         cols[str(c.name)] = c.type
     return cols
 
-def compare_file_table(file_code, file_frame):
+def compare_file_table(file_code, file_frame_columns):
     '''
-    get the list of columns that are in the consolidated data frame
-    that are NOT in the database table - these will be removed from the frame
-    allowing for a clean insert and printed out so the table can be updated to 
-    include these columns if needed
+    Find any columns that are in the provided Pandas data frame
+    that are NOT in the existing database table. 
+    
+    **These columns can either be removed from the frame to allow a clean insert;
+    Or - modify the table structure to account for the new columns. Account running
+    the script must have permission to change structure of the table. 
     '''
     table_columns = table_column_metadata(file_code)
-    not_in_table = [c for c in file_frame.columns if c not in table_columns]
+    not_in_table = [c for c in file_frame_columns if c not in table_columns]
     # not_in_file = [c for c in table_columns if c not in file_frame.columns]
     return not_in_table
 
 def clean_file_frame(file_frame, not_in_table):
     '''
     remove any columns from the file frame that are not
-    in the target database table for the given file_code
+    in the target database table for the given file_code**
+    TODO: make an alternate function that updates the table structure adding columns
     '''
     for frame_col in file_frame.columns:
         if frame_col in not_in_table:
-            del consolidated_frame[frame_col]
+            del file_frame[frame_col]
     return not_in_table
-            
-    
 
+def del_current_year(file_year, file_code):
+    '''
+    Delete's data in an existing table for the specified year. 
+    Verify table exists before calling
+    '''
+    del_year = f'DELETE FROM {settings.TARGET_SCHEMA}.tbl{file_code} WHERE SURVEY_YEAR = {str(file_year)}'
+    print(f'{file_year} data deleted from tbl{file_code}')
+    settings.ENGINE.execute(del_year)
+    pass
+
+def table_exists(file_code):
+    '''
+    check if target table exists in the existing database
+    '''
+    sql = f"SELECT CASE WHEN EXISTS(SELECT * FROM IPEDS_TEST.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'tbl{file_code}') THEN 'True' ELSE 'False' END"
+    result = settings.ENGINE.execute(sql)
+
+    exists = result.first()
+
+    if exists:
+        table_status = True if exists[0] == 'True' else False
+
+    return table_status
+
+def add_missing_columns_to_table(missing_columns, file_code, ENGINE):
+    '''
+    If any columns exist in dataframe that are not in table
+    adds VARCHAR(MAX) columns to table to account for data
+    '''
+    for new_col in missing_columns:
+        add_column_sql = f'ALTER TABLE {settings.TARGET_SCHEMA}.tbl{file_code} ADD {new_col} VARCHAR(MAX) NULL'
+        settings.ENGINE.execute(add_column_sql)
+        # print(add_column_sql)
+            
 def extract_file(data, survey, file_code, survey_year, dictionary=False):
-    """Extract the latest data file in the downloaded zip file to the data directory
-    and return a dictionary of metadata to the calling function.
-    """
+    '''
+    Extract the latest data or dictionary file in the downloaded zip file to the data directory
+    and return the path of the successfully extracted file to the caller. 
+    '''
     print('extracting', ('dictionary...' if dictionary else '...'))
     extracted_file = ''
     data = zipfile.ZipFile(io.BytesIO(data.content))
-    # if multiple files in zip, extract the latest revised data ONLY
+    # if multiple files in zip, extract the last file in the list
+    # Should represent the _RV suffixed file containing the latest revised data ONLY
     data_file = data.namelist()[len(data.namelist())-1]
     output_path = os.path.join(settings.DATA_DIRECTORY, survey, file_code)
     if dictionary:
@@ -90,9 +123,11 @@ def extract_file(data, survey, file_code, survey_year, dictionary=False):
 
 def download_file_request(file_url):
     '''
-    HORRIBLE HACK: keep repeating request until successfull
-    while Ignoring exceptions...
-    works for data files and dictionaries
+    HORRIBLE HACK: keep repeating download request until successfull
+    IPEDS Site is sometimes non-responsive on slow internet connections
+    This repeats the download request 50 times; hasn't failed yet for 
+    a file that is known to exist. 
+    TODO: Find a more elegant way to handle errors; this seems stupid. 
     '''
     failed_attempts = 0
     data_req = None
@@ -107,9 +142,11 @@ def download_file_request(file_url):
     return data_req
 
 def download_file(survey, file_code, survey_year, get_dictionary=False):
-    """Build the zip file url for the specified file and year
+    '''
+    Build the zip file url for the specified file and year
     optionally do the same for the dictionary for that year
-    """
+    '''
+    # format file name and create url
     formatter = settings.SURVEY_FILES[survey][file_code]
     data_file_name = formatter(survey_year)
     data_file_url = os.path.join(settings.IPEDS_BASE_URL, data_file_name)
@@ -119,8 +156,8 @@ def download_file(survey, file_code, survey_year, get_dictionary=False):
     file_metadata = ''
     if data_request.ok:
         file_metadata = extract_file(data_request, survey, file_code, survey_year)
-        #only attemp to get dictionary if data request was successful
         print('downloaded')
+        # only attemp to get dictionary if data request was successful
         if get_dictionary:
             dictionary_file_url = os.path.join(settings.IPEDS_BASE_URL, data_file_name[:-4]+'_Dict.zip')
             # dictionary_request = requests.get(dictionary_file_url)
@@ -132,22 +169,25 @@ def download_file(survey, file_code, survey_year, get_dictionary=False):
         print(file_metadata)
     return file_metadata
 
-def consolidate_survey_files(file_code_log, row_test=None):
-    """
-    Consolidate all csv files in a given directory into a single Pandas dataframe
+def consolidate_survey_files(file_code_log, file_code, row_test=None):
+    '''
+    Consolidate all downloaded files in a given directory into a single Pandas dataframe
     Each year goes into a data frame, that is added to a list of frames, the list
     is then concatenated. The concatenation process takes care of aligning consistent
     fields between files and if fields are dropped or added across years, they are filled
     with empty strings when there is no data. 
-    """
+    '''
+    # initialize empty list to hold all data frames for specified file_code
     file_frames = []
+    # loops through the metadata of successfully downloaded files
     for file_year in file_code_log:
         if file_code_log[file_year] != 'File Not Found':
             file_frame = pd.read_csv(file_code_log[file_year]
                                      , dtype=object
                                      , nrows=row_test
-                                     , encoding=READ_ENCODING
+                                     , encoding=settings.READ_ENCODING
                                     )
+            # Cleanse string placeholders formats from IPEDS numeric data columns
             file_frame = file_frame.replace(['.', ' .'], '')
             file_frame['SURVEY_YEAR'] = pd.Series(file_year, file_frame.index) #year not available..
             file_frame.columns = [col.upper().strip() for col in file_frame.columns]
@@ -163,14 +203,52 @@ def consolidate_survey_files(file_code_log, row_test=None):
                     else:
                         cols.append(c)
                 file_frame.columns = cols
-
             file_frames.append(file_frame)
+    # make sure there is actually data before attempting to concatenate
     if len(file_frames) > 0:
         return pd.concat(file_frames)
 
+def write_years_to_table(file_code, file_code_log, row_test=None):
+    '''
+    Write one file to the existing table; check if all columns exist first, add if missing
+    '''
+    for file_year in file_code_log:
+        if file_code_log[file_year] != 'File Not Found':
+            file_frame = pd.read_csv(file_code_log[file_year]
+                                     , dtype=object
+                                     , nrows=row_test
+                                     , encoding=settings.READ_ENCODING
+                                    )
+            # Cleanse string placeholders formats from IPEDS numeric data columns
+            file_frame = file_frame.replace(['.', ' .'], '')
+            file_frame['SURVEY_YEAR'] = pd.Series(file_year, file_frame.index) #year not available..
+            file_frame.columns = [col.upper().strip() for col in file_frame.columns]
+            #DATA ISSUE IN IPEDS - the IPEDS source file transposed the imputation column and 
+            # data column in this file for this year; swap column headings to correctly align:
+            if file_year == 2008 and 'F2A20' in file_frame.columns:
+                cols = []
+                for c in file_frame.columns:
+                    if c == 'XF2A20':
+                        cols.append('F2A20')
+                    elif c == 'F2A20':
+                        cols.append('XF2A20')
+                    else:
+                        cols.append(c)
+                file_frame.columns = cols
+            if table_exists(file_code):
+                missing = compare_file_table(file_code, file_frame.columns)
+                add_missing_columns_to_table(missing, file_code, settings.ENGINE)
+                del_current_year(file_year, file_code)
+            else:
+                missing = None
+            file_frame.to_sql('tbl'+file_code, settings.ENGINE, schema=settings.TARGET_SCHEMA, if_exists='append', index=False)
+            print(file_year, 'written.', 'Columns Added:', missing)
+    pass
 
 def __main__():
-    """
+    '''
+    TODO: Clean this up. Clarify steps in process
+
     Set download_surveys to define the data you want to get on this run
     set the download_surveys list to include the survey groups that you want to download
     better for a controlled run to only do 1 or 2 at a time
@@ -181,40 +259,15 @@ def __main__():
     is part of the 2015-2016 academic year. 
     Whereas completion data for 2015 is at the end of the year, which is the 2014-2015 academic year. 
 
-    """
-    # download_surveys = ['AcademicLibraries'] #
-    # download_surveys = ['EmployeesByAssignedPosition'] # 
-    # download_surveys = ['InstructionalStaffSalaries'] # .
-
-    ###### start_year = 2003 which is the 2002-2003 Academic Year for these file groups:
-    # download_surveys = ['UnduplicatedEnrollment'] # 
-    # download_surveys = ['Finance'] # 
-    # download_surveys = ['GradRates'] # 
-    # download_surveys = ['StudentFinAid'] # 2-27
-    # download_surveys = ['Completions'] # 
-    #or
-    # download_surveys = ['Completions', 'StudentFinAid', 'GradRates', 'Finance', 'UnduplicatedEnrollment']
-
-    ###### start_year = 2002 which is the 2002-2003 Academic Year for these 2 file groups:
-    download_surveys = ['InstitutionCharacteristics'] # 2-27
-    # download_surveys = ['FallEnrollment'] #
-    # download_surveys = ['AdmissionsTestScores'] #
-    #or
-    # download_surveys = ['InstitutionCharacteristics', 'FallEnrollment', 'AdmissionsTestScores'] # run: 2017-7-24
-
-    start_year = 2002
-    end_year = 2017
-
-    survey_year_range = range(start_year, end_year + 1)
-    surveys = {k : settings.SURVEY_FILES[k] for k in download_surveys}
-    # surveys = settings.SURVEY_FILES # this will download ALL files for ALL surveys...long run..
-
+    '''
+    survey_year_range = settings.SURVEY_YEAR_RANGE
+    surveys = settings.DOWNLOAD_SURVEY_FILE_LIST
     start_time = dt.datetime.now()
     #loop through the surveys you want to download
     for survey in surveys:
         log = {'Download Date' : settings.DOWNLOAD_DATE,
-               'Search Start Year' : start_year,
-               'Search End Year' : end_year
+               'Search Start Year' : settings.START_YEAR,
+               'Search End Year' : settings.END_YEAR
               }
         log[survey] = {}
         
@@ -225,28 +278,19 @@ def __main__():
             #loop through the desired years, for that file:
             for survey_year in survey_year_range:
                 print("Download Start: ", survey, file_code, survey_year)
-                meta_result = download_file(survey, file_code, survey_year, get_dictionary=True)
+                meta_result = download_file(survey, file_code, survey_year, get_dictionary=settings.GET_DICTIONARIES)
                 print("Download Complete: ", meta_result)
                 log[survey][file_code][survey_year] = meta_result
             
+            write_years_to_table(file_code, log[survey][file_code])
+            
             #once you have all years, start consolidating the separate files:
-            print('Start Consolidation')
-            consolidated_file = consolidate_survey_files(log[survey][file_code])
-            print('Consolidation Done.')
+            # print('Start Consolidation')
+            # consolidated_file = consolidate_survey_files(log[survey][file_code], file_code)
+            # print('Consolidation Done.')
 
-            ####### WRITE CONSOLIDATED FILE TO CSV
-            # consolidated_file_name = '_'.join([file_code
-            #                                    , 'Consolidated'
-            #                                    , str(start_year) + '-' + str(end_year)
-            #                                    , '.csv'])
-            # consolidated_file.to_csv(os.path.join(settings.DATA_DIRECTORY, survey, file_code
-            #                                       , consolidated_file_name)
-            #                          , index=False
-            #                          , encoding=WRITE_ENCODING
-            #            
-            #              )
             ####### WRITE CONSOLIDATED FILE TO SQL
-            consolidated_file.to_sql('tbl'+file_code, ENGINE, schema='IPEDS', if_exists='replace', index=False)
+            # consolidated_file.to_sql('tbl'+file_code, settings.ENGINE, schema=settings.TARGET_SCHEMA, if_exists=settings.APPEND_OR_REPLACE, index=False)
             
             # print logging:
             print(file_code)
