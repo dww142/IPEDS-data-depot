@@ -1,3 +1,7 @@
+'''
+Reads field name and lookup metadata from IPEDS Excel Dictionary files. 
+
+'''
 import os
 import pandas as pd
 import settings
@@ -6,12 +10,14 @@ import xlsxwriter
 
 # working_surveys = ['FallEnrollment']
 # surveys = {k : settings.SURVEY_FILES[k] for k in working_surveys}
-surveys = settings.SURVEY_FILES
+surveys = settings.DOWNLOAD_SURVEY_LIST
 
 def read_varlist_descriptions(wb):
     '''
+    Read variable list and long descriptions from dictionary worksheets
+    and combine into a single frame. (Field names and descriptions NOT lookup codes-descs)
     '''
-    # read varlist and descriptions in frames (sheet name case sensitive & inconsistent)
+    # read varlist (lookup codes) and descriptions in frames (sheet name case sensitive & inconsistent)
     varlist_sheet = 'varlist' if 'varlist' in wb.sheet_names() else 'Varlist'
     dict_varlist = pd.read_excel(wb, engine='xlrd', sheet_name=varlist_sheet)
     # handle occurances where dictionary does not have a long description worksheet
@@ -31,9 +37,8 @@ def read_varlist_descriptions(wb):
     
 def read_lookup_df(wb):
     '''
-    input: wb = xlrd workbook of the single year dictionary file
-    read the lookup variables from the IPEDS dictionary file and 
-    return a pandas dataframe
+    Read the lookup variables from the frequencies worksheet in the dictionary file and 
+    return a pandas dataframe. (reads revised frequencies if available)
     '''
     # read variable lookups
     # if revised lookups availabe - use; else use Frequencies sheet (sometimes name 'Statistics' instead of frequences)
@@ -75,7 +80,7 @@ print(file_code_master_dictionary.columns)
 file_code_consolidated_lookups = pd.concat(file_code_lookupvalues)
 file_code_consolidated_lookups.drop_duplicates(subset=['SOURCE', 'varnumber', 'varname', 'codevalue', 'valuelabel'], keep='last', inplace=True)
 # set output dictionary file path
-xl_writer = pd.ExcelWriter(os.path.join(settings.DATA_DIRECTORY, '..\\_Metadata', 'IPEDS_ConsolidatedDictionary.xls'))
+xl_writer = pd.ExcelWriter(os.path.join(settings.DATA_DIRECTORY, '_Metadata', 'IPEDS_ConsolidatedDictionary.xls'))
 file_code_master_dictionary.to_excel(xl_writer, sheet_name='VarDescriptions', index=False)
 file_code_consolidated_lookups.to_excel(xl_writer, sheet_name='VarLookups', index=False)
 xl_writer.save()
