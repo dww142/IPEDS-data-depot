@@ -33,8 +33,11 @@ def table_column_metadata(file_code):
     base = declarative_base()
     base.metadata.reflect(settings.ENGINE, schema=settings.TARGET_SCHEMA)
     cols = {}
-    for c in base.metadata.tables[settings.TARGET_SCHEMA + '.tbl' + file_code].columns:
-        cols[str(c.name)] = c.type
+    if f'{settings.TARGET_SCHEMA}tblHD' in base.metadata.tables:
+        for c in base.metadata.tables[f'{settings.TARGET_SCHEMA}tblHD'].columns:
+            cols[str(c.name)] = c.type
+    else:
+        cols = None
     return cols
 
 def compare_file_table(file_code, file_frame_columns):
@@ -47,7 +50,10 @@ def compare_file_table(file_code, file_frame_columns):
     the script must have permission to change structure of the table. 
     '''
     table_columns = table_column_metadata(file_code)
-    not_in_table = [c for c in file_frame_columns if c not in table_columns]
+    if table_columns:
+        not_in_table = [c for c in file_frame_columns if c not in table_columns]
+    else:
+        not_in_table = None
     # not_in_file = [c for c in table_columns if c not in file_frame.columns]
     return not_in_table
 
@@ -67,7 +73,7 @@ def del_current_year(file_year, file_code):
     Delete's data in an existing table for the specified year. 
     Verify table exists before calling
     '''
-    del_year = f'DELETE FROM {settings.TARGET_SCHEMA}.tbl{file_code} WHERE SURVEY_YEAR = {str(file_year)}'
+    del_year = f'DELETE FROM {settings.TARGET_SCHEMA}tbl{file_code} WHERE SURVEY_YEAR = {str(file_year)}'
     print(f'{file_year} data deleted from tbl{file_code}')
     settings.ENGINE.execute(del_year)
     pass
@@ -76,7 +82,7 @@ def table_exists(file_code):
     '''
     check if target table exists in the existing database
     '''
-    sql = f"SELECT CASE WHEN EXISTS(SELECT * FROM IPEDS_TEST.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'tbl{file_code}') THEN 'True' ELSE 'False' END"
+    sql = f"SELECT CASE WHEN EXISTS(SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'tbl{file_code}') THEN 'True' ELSE 'False' END"
     result = settings.ENGINE.execute(sql)
 
     exists = result.first()
@@ -92,7 +98,7 @@ def add_missing_columns_to_table(missing_columns, file_code, ENGINE):
     adds VARCHAR(MAX) columns to table to account for data
     '''
     for new_col in missing_columns:
-        add_column_sql = f'ALTER TABLE {settings.TARGET_SCHEMA}.tbl{file_code} ADD {new_col} VARCHAR(MAX) NULL'
+        add_column_sql = f'ALTER TABLE {settings.TARGET_SCHEMA}tbl{file_code} ADD {new_col} VARCHAR(500) NULL'
         settings.ENGINE.execute(add_column_sql)
         # print(add_column_sql)
             
@@ -101,7 +107,7 @@ def extract_file(data, survey, file_code, survey_year, dictionary=False):
     Extract the latest data or dictionary file in the downloaded zip file to the data directory
     and return the path of the successfully extracted file to the caller. 
     '''
-    print('extracting', ('dictionary...' if dictionary else '...'))
+    print('extracting', ('dictionary...' if dictionary else '...'), end='...')
     extracted_file = ''
     data = zipfile.ZipFile(io.BytesIO(data.content))
     # if multiple files in zip, extract the last file in the list
@@ -156,7 +162,7 @@ def download_file(survey, file_code, survey_year, get_dictionary=False):
     file_metadata = ''
     if data_request.ok:
         file_metadata = extract_file(data_request, survey, file_code, survey_year)
-        print('downloaded')
+        print('Downloaded', end='... ')
         # only attemp to get dictionary if data request was successful
         if get_dictionary:
             dictionary_file_url = os.path.join(settings.IPEDS_BASE_URL, data_file_name[:-4]+'_Dict.zip')
@@ -208,6 +214,18 @@ def consolidate_survey_files(file_code_log, file_code, row_test=None):
     if len(file_frames) > 0:
         return pd.concat(file_frames)
 
+def create_table(file_code, columns):
+    '''
+    Create the ETL DB table for the specified file code with varchar(500) columns. 
+    Prevents the varchar(max) columns of the default write
+    '''
+    create_sql = f'CREATE TABLE {settings.TARGET_SCHEMA}tbl{file_code}(\n'
+    for column in columns:
+        if column.upper() in ['SURVEY_YEAR','UNITID']:
+            create_sql += f'{column} INT not null'
+        else:
+            create_sql += f'{column} varchar(500) null \n'
+    pass
 def write_years_to_table(file_code, file_code_log, row_test=None):
     '''
     Write one file to the existing table; check if all columns exist first, add if missing
@@ -235,11 +253,13 @@ def write_years_to_table(file_code, file_code_log, row_test=None):
                     else:
                         cols.append(c)
                 file_frame.columns = cols
+            # 
             if table_exists(file_code):
                 missing = compare_file_table(file_code, file_frame.columns)
                 add_missing_columns_to_table(missing, file_code, settings.ENGINE)
                 del_current_year(file_year, file_code)
             else:
+                create_table(file_code, file_frame.columns)
                 missing = None
             file_frame.to_sql('tbl'+file_code, settings.ENGINE, schema=settings.TARGET_SCHEMA, if_exists='append', index=False)
             print(file_year, 'written.', 'Columns Added:', missing)
@@ -277,9 +297,9 @@ def __main__():
 
             #loop through the desired years, for that file:
             for survey_year in survey_year_range:
-                print("Download Start: ", survey, file_code, survey_year)
+                print("Download Start: ", survey, file_code, survey_year, end='... ')
                 meta_result = download_file(survey, file_code, survey_year, get_dictionary=settings.GET_DICTIONARIES)
-                print("Download Complete: ", meta_result)
+                print("Done.")
                 log[survey][file_code][survey_year] = meta_result
             
             if settings.WRITE_TO_TABLE:
@@ -306,7 +326,5 @@ def __main__():
     # print(json.dumps(download_log, indent=2))
     runtime = dt.datetime.now() - start_time
     print('Start:', start_time, 'End:', dt.datetime.now(), 'Elapsed:', runtime)
-
-
 
 __main__()
