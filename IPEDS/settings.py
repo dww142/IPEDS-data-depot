@@ -6,12 +6,16 @@ import datetime as dt
 import sqlalchemy as sa
 
 SERVER_NAME = 'LOCALHOST'
-DATABASE_NAME = 'IPEDS_TEST'
-TARGET_SCHEMA = 'IPEDS'
+DATABASE_NAME = 'SLDS_ETL'
+TARGET_SCHEMA = 'IPEDS.'
 USERNAME = 'sql_alchemy'
 PASSWORD = 'sql_alchemy'
 
+# local sql server
 ENGINE = sa.create_engine(f'mssql+pyodbc://{USERNAME}:{PASSWORD}@{SERVER_NAME}/{DATABASE_NAME}?driver=SQL+Server+Native+Client+11.0')
+# local postgresql
+# TARGET_SCHEMA = ''
+# ENGINE = sa.create_engine(f'postgresql://{USERNAME}:{PASSWORD}@{SERVER_NAME}/{DATABASE_NAME}')
 
 # KEEP THIS AS APPEND - data is written to table one year at a time
 # replace will drop and recreate an existing table and leave with only the last years data
@@ -60,9 +64,10 @@ SURVEY_FILES = {
                  'F3_PFP':  lambda year: 'F%s%s_F3.zip' % (str(year-1)[-2:], str(year)[-2:]),},
     'GradRates' : {'GR150': lambda year: 'GR%s.zip' % str(year),
                    'GR200': lambda year: 'GR200_%s.zip' % str(year)[-2:],
-                   'GRL2':  lambda year: 'GR%s_L2.zip' % str(year),},
-    'InstitutionCharacteristics' : {'HD':       lambda year: 'HD%s.zip' % str(year),
-                                    'IC':       lambda year: 'IC%s.zip' % str(year),
+                   'GRL2':  lambda year: 'GR%s_L2.zip' % str(year),
+                   'GR_PELL_SSL' : lambda year: 'GR%s_PELL_SSL.zip' % str(year),},
+    'InstitutionCharacteristics' : {#'HD':       lambda year: 'HD%s.zip' % str(year),
+                                    #'IC':       lambda year: 'IC%s.zip' % str(year),
                                     'IC_AY':    lambda year: 'IC%s_AY.zip' % str(year),
                                     'IC_PY':    lambda year: 'IC%s_PY.zip' % str(year),
                                    },
@@ -77,9 +82,7 @@ SURVEY_FILES = {
 
 DOWNLOAD_SURVEY_LIST = []
 
-# DOWNLOAD_SURVEY_LIST.append('AcademicLibraries')
-# DOWNLOAD_SURVEY_LIST.append('EmployeesByAssignedPosition')
-# DOWNLOAD_SURVEY_LIST.append('InstructionalStaffSalaries')
+
 
 ###### start_year = 2003 which is the 2002-2003 Academic Year for these file groups:
 # START_YEAR = 2003
@@ -91,8 +94,11 @@ DOWNLOAD_SURVEY_LIST = []
 
 ###### start_year = 2002 which is the 2002-2003 Academic Year for these 2 file groups:
 DOWNLOAD_SURVEY_LIST.append('InstitutionCharacteristics')
-# DOWNLOAD_SURVEY_LIST.append('FallEnrollment')
-# DOWNLOAD_SURVEY_LIST.append('AdmissionsTestScores')
+DOWNLOAD_SURVEY_LIST.append('FallEnrollment')
+DOWNLOAD_SURVEY_LIST.append('AdmissionsTestScores')
+DOWNLOAD_SURVEY_LIST.append('AcademicLibraries')
+DOWNLOAD_SURVEY_LIST.append('EmployeesByAssignedPosition')
+DOWNLOAD_SURVEY_LIST.append('InstructionalStaffSalaries')
 
 DOWNLOAD_SURVEY_FILE_LIST = {k : SURVEY_FILES[k] for k in DOWNLOAD_SURVEY_LIST}
 GET_DICTIONARIES = True
