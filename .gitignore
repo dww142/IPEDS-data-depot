@@ -4,6 +4,6 @@
 __pycache__/
 *.pyc
 
-*/Data/
+IPEDS/Data/
 */Dictionaries/
 test.py
