@@ -1,0 +1,204 @@
+﻿RegionType,RegionName,CountyName,CountyFIPS_3,StateFIPSCd
+PA Workforce Region,Central,Adams,001,42
+PA Workforce Region,Southwest,Allegheny,003,42
+PA Workforce Region,Southwest,Armstrong,005,42
+PA Workforce Region,Southwest,Beaver,007,42
+PA Workforce Region,Southwest,Bedford,009,42
+PA Workforce Region,Southeast,Berks,011,42
+PA Workforce Region,Southwest,Blair,013,42
+PA Workforce Region,Northeast,Bradford,015,42
+PA Workforce Region,Southeast,Bucks,017,42
+PA Workforce Region,Southwest,Butler,019,42
+PA Workforce Region,Southwest,Cambria,021,42
+PA Workforce Region,Northwest,Cameron,023,42
+PA Workforce Region,Northeast,Carbon,025,42
+PA Workforce Region,Central,Centre,027,42
+PA Workforce Region,Southeast,Chester,029,42
+PA Workforce Region,Northwest,Clarion,031,42
+PA Workforce Region,Northwest,Clearfield,033,42
+PA Workforce Region,Central,Clinton,035,42
+PA Workforce Region,Central,Columbia,037,42
+PA Workforce Region,Northwest,Crawford,039,42
+PA Workforce Region,Central,Cumberland,041,42
+PA Workforce Region,Central,Dauphin,043,42
+PA Workforce Region,Southeast,Delaware,045,42
+PA Workforce Region,Northwest,Elk,047,42
+PA Workforce Region,Northwest,Erie,049,42
+PA Workforce Region,Southwest,Fayette,051,42
+PA Workforce Region,Northwest,Forest,053,42
+PA Workforce Region,Central,Franklin,055,42
+PA Workforce Region,Southwest,Fulton,057,42
+PA Workforce Region,Southwest,Greene,059,42
+PA Workforce Region,Southwest,Huntingdon,061,42
+PA Workforce Region,Southwest,Indiana,063,42
+PA Workforce Region,Northwest,Jefferson,065,42
+PA Workforce Region,Central,Juniata,067,42
+PA Workforce Region,Northeast,Lackawanna,069,42
+PA Workforce Region,Central,Lancaster,071,42
+PA Workforce Region,Northwest,Lawrence,073,42
+PA Workforce Region,Central,Lebanon,075,42
+PA Workforce Region,Southeast,Lehigh,077,42
+PA Workforce Region,Northeast,Luzerne,079,42
+PA Workforce Region,Central,Lycoming,081,42
+PA Workforce Region,Northwest,McKean,083,42
+PA Workforce Region,Northwest,Mercer,085,42
+PA Workforce Region,Central,Mifflin,087,42
+PA Workforce Region,Northeast,Monroe,089,42
+PA Workforce Region,Southeast,Montgomery,091,42
+PA Workforce Region,Central,Montour,093,42
+PA Workforce Region,Southeast,Northampton,095,42
+PA Workforce Region,Central,Northumberland,097,42
+PA Workforce Region,Central,Perry,099,42
+PA Workforce Region,Southeast,Philadelphia,101,42
+PA Workforce Region,Northeast,Pike,103,42
+PA Workforce Region,Northwest,Potter,105,42
+PA Workforce Region,Central,Schuylkill,107,42
+PA Workforce Region,Central,Snyder,109,42
+PA Workforce Region,Southwest,Somerset,111,42
+PA Workforce Region,Northeast,Sullivan,113,42
+PA Workforce Region,Northeast,Susquehanna,115,42
+PA Workforce Region,Northeast,Tioga,117,42
+PA Workforce Region,Central,Union,119,42
+PA Workforce Region,Northwest,Venango,121,42
+PA Workforce Region,Northwest,Warren,123,42
+PA Workforce Region,Southwest,Washington,125,42
+PA Workforce Region,Northeast,Wayne,127,42
+PA Workforce Region,Southwest,Westmoreland,129,42
+PA Workforce Region,Northeast,Wyoming,131,42
+PA Workforce Region,Central,York,133,42
+PA Workforce Development Region,NA,NA,000,42
+PA Workforce Development Region,South Central WDA,Adams County,001,42
+PA Workforce Development Region,Three Rivers WDA,Allegheny County,003,42
+PA Workforce Development Region,Tri-County WDA,Armstrong County,005,42
+PA Workforce Development Region,Southwest Corner WDA,Beaver County,007,42
+PA Workforce Development Region,Southern Alleghenies WDA,Bedford County,009,42
+PA Workforce Development Region,Berks County WDA,Berks County,011,42
+PA Workforce Development Region,Southern Alleghenies WDA,Blair County,013,42
+PA Workforce Development Region,Northern Tier WDA,Bradford County,015,42
+PA Workforce Development Region,Bucks County WDA,Bucks County,017,42
+PA Workforce Development Region,Tri-County WDA,Butler County,019,42
+PA Workforce Development Region,Southern Alleghenies WDA,Cambria County,021,42
+PA Workforce Development Region,North Central WDA,Cameron County,023,42
+PA Workforce Development Region,Pocono Counties WDA,Carbon County,025,42
+PA Workforce Development Region,Central WDA,Centre County,027,42
+PA Workforce Development Region,Chester County WDA,Chester County,029,42
+PA Workforce Development Region,Northwest WDA,Clarion County,031,42
+PA Workforce Development Region,North Central WDA,Clearfield County,033,42
+PA Workforce Development Region,Central WDA,Clinton County,035,42
+PA Workforce Development Region,Central WDA,Columbia County,037,42
+PA Workforce Development Region,Northwest WDA,Crawford County,039,42
+PA Workforce Development Region,South Central WDA,Cumberland County,041,42
+PA Workforce Development Region,South Central WDA,Dauphin County,043,42
+PA Workforce Development Region,Delaware County WDA,Delaware County,045,42
+PA Workforce Development Region,North Central WDA,Elk County,047,42
+PA Workforce Development Region,Northwest WDA,Erie County,049,42
+PA Workforce Development Region,Westmoreland-Fayette Counties WDA,Fayette County,051,42
+PA Workforce Development Region,Northwest WDA,Forest County,053,42
+PA Workforce Development Region,South Central WDA,Franklin County,055,42
+PA Workforce Development Region,Southern Alleghenies WDA,Fulton County,057,42
+PA Workforce Development Region,Southwest Corner WDA,Greene County,059,42
+PA Workforce Development Region,Southern Alleghenies WDA,Huntingdon County,061,42
+PA Workforce Development Region,Tri-County WDA,Indiana County,063,42
+PA Workforce Development Region,North Central WDA,Jefferson County,065,42
+PA Workforce Development Region,South Central WDA,Juniata County,067,42
+PA Workforce Development Region,Lackawanna County WDA,Lackawanna County,069,42
+PA Workforce Development Region,Lancaster County WDA,Lancaster County,071,42
+PA Workforce Development Region,West Central WDA,Lawrence County,073,42
+PA Workforce Development Region,South Central WDA,Lebanon County,075,42
+PA Workforce Development Region,Lehigh Valley WDA,Lehigh County,077,42
+PA Workforce Development Region,Luzerne-Schuylkill Counties WDA,Luzerne County,079,42
+PA Workforce Development Region,Central WDA,Lycoming County,081,42
+PA Workforce Development Region,North Central WDA,McKean County,083,42
+PA Workforce Development Region,West Central WDA,Mercer County,085,42
+PA Workforce Development Region,Central WDA,Mifflin County,087,42
+PA Workforce Development Region,Pocono Counties WDA,Monroe County,089,42
+PA Workforce Development Region,Montgomery County WDA,Montgomery County,091,42
+PA Workforce Development Region,Central WDA,Montour County,093,42
+PA Workforce Development Region,Lehigh Valley WDA,Northampton County,095,42
+PA Workforce Development Region,Central WDA,Northumberland County,097,42
+PA Workforce Development Region,South Central WDA,Perry County,099,42
+PA Workforce Development Region,Philadelphia County WDA,Philadelphia County,101,42
+PA Workforce Development Region,Pocono Counties WDA,Pike County,103,42
+PA Workforce Development Region,North Central WDA,Potter County,105,42
+PA Workforce Development Region,Luzerne-Schuylkill Counties WDA,Schuylkill County,107,42
+PA Workforce Development Region,Central WDA,Snyder County,109,42
+PA Workforce Development Region,Southern Alleghenies WDA,Somerset County,111,42
+PA Workforce Development Region,Northern Tier WDA,Sullivan County,113,42
+PA Workforce Development Region,Northern Tier WDA,Susquehanna County,115,42
+PA Workforce Development Region,Northern Tier WDA,Tioga County,117,42
+PA Workforce Development Region,Central WDA,Union County,119,42
+PA Workforce Development Region,Northwest WDA,Venango County,121,42
+PA Workforce Development Region,Northwest WDA,Warren County,123,42
+PA Workforce Development Region,Southwest Corner WDA,Washington County,125,42
+PA Workforce Development Region,Pocono Counties WDA,Wayne County,127,42
+PA Workforce Development Region,Westmoreland-Fayette Counties WDA,Westmoreland County,129,42
+PA Workforce Development Region,Northern Tier WDA,Wyoming County,131,42
+PA Workforce Development Region,South Central WDA,York County,133,42
+PAEconomicDevelopmentRegion,NA,NA,000,42
+PAEconomicDevelopmentRegion,Central,Adams County,001,42
+PAEconomicDevelopmentRegion,Southwest,Allegheny County,003,42
+PAEconomicDevelopmentRegion,Southwest,Armstrong County,005,42
+PAEconomicDevelopmentRegion,Southwest,Beaver County,007,42
+PAEconomicDevelopmentRegion,Southwest,Bedford County,009,42
+PAEconomicDevelopmentRegion,Lehigh Valley,Berks County,011,42
+PAEconomicDevelopmentRegion,Southwest,Blair County,013,42
+PAEconomicDevelopmentRegion,Northeast,Bradford County,015,42
+PAEconomicDevelopmentRegion,Southeast,Bucks County,017,42
+PAEconomicDevelopmentRegion,Southwest,Butler County,019,42
+PAEconomicDevelopmentRegion,Southwest,Cambria County,021,42
+PAEconomicDevelopmentRegion,Northwest,Cameron County,023,42
+PAEconomicDevelopmentRegion,Northeast,Carbon County,025,42
+PAEconomicDevelopmentRegion,Northwest,Centre County,027,42
+PAEconomicDevelopmentRegion,Southeast,Chester County,029,42
+PAEconomicDevelopmentRegion,Northwest,Clarion County,031,42
+PAEconomicDevelopmentRegion,Northwest,Clearfield County,033,42
+PAEconomicDevelopmentRegion,Northeast,Clinton County,035,42
+PAEconomicDevelopmentRegion,Northeast,Columbia County,037,42
+PAEconomicDevelopmentRegion,Northwest,Crawford County,039,42
+PAEconomicDevelopmentRegion,Central,Cumberland County,041,42
+PAEconomicDevelopmentRegion,Central,Dauphin County,043,42
+PAEconomicDevelopmentRegion,Southeast,Delaware County,045,42
+PAEconomicDevelopmentRegion,Northwest,Elk County,047,42
+PAEconomicDevelopmentRegion,Northwest,Erie County,049,42
+PAEconomicDevelopmentRegion,Southwest,Fayette County,051,42
+PAEconomicDevelopmentRegion,Northwest,Forest County,053,42
+PAEconomicDevelopmentRegion,Central,Franklin County,055,42
+PAEconomicDevelopmentRegion,Central,Fulton County,057,42
+PAEconomicDevelopmentRegion,Southwest,Greene County,059,42
+PAEconomicDevelopmentRegion,Central,Huntingdon County,061,42
+PAEconomicDevelopmentRegion,Southwest,Indiana County,063,42
+PAEconomicDevelopmentRegion,Northwest,Jefferson County,065,42
+PAEconomicDevelopmentRegion,Central,Juniata County,067,42
+PAEconomicDevelopmentRegion,Northeast,Lackawanna County,069,42
+PAEconomicDevelopmentRegion,Southeast,Lancaster County,071,42
+PAEconomicDevelopmentRegion,Northwest,Lawrence County,073,42
+PAEconomicDevelopmentRegion,Lehigh Valley,Lebanon County,075,42
+PAEconomicDevelopmentRegion,Lehigh Valley,Lehigh County,077,42
+PAEconomicDevelopmentRegion,Northeast,Luzerne County,079,42
+PAEconomicDevelopmentRegion,Northeast,Lycoming County,081,42
+PAEconomicDevelopmentRegion,Northwest,McKean County,083,42
+PAEconomicDevelopmentRegion,Northwest,Mercer County,085,42
+PAEconomicDevelopmentRegion,Central,Mifflin County,087,42
+PAEconomicDevelopmentRegion,Lehigh Valley,Monroe County,089,42
+PAEconomicDevelopmentRegion,Southeast,Montgomery County,091,42
+PAEconomicDevelopmentRegion,Northeast,Montour County,093,42
+PAEconomicDevelopmentRegion,Lehigh Valley,Northampton County,095,42
+PAEconomicDevelopmentRegion,Lehigh Valley,Northumberland County,097,42
+PAEconomicDevelopmentRegion,Central,Perry County,099,42
+PAEconomicDevelopmentRegion,Southeast,Philadelphia County,101,42
+PAEconomicDevelopmentRegion,Northeast,Pike County,103,42
+PAEconomicDevelopmentRegion,Northwest,Potter County,105,42
+PAEconomicDevelopmentRegion,Northeast,Schuylkill County,107,42
+PAEconomicDevelopmentRegion,Lehigh Valley,Snyder County,109,42
+PAEconomicDevelopmentRegion,Southwest,Somerset County,111,42
+PAEconomicDevelopmentRegion,Northeast,Sullivan County,113,42
+PAEconomicDevelopmentRegion,Northeast,Susquehanna County,115,42
+PAEconomicDevelopmentRegion,Northeast,Tioga County,117,42
+PAEconomicDevelopmentRegion,Lehigh Valley,Union County,119,42
+PAEconomicDevelopmentRegion,Northwest,Venango County,121,42
+PAEconomicDevelopmentRegion,Northwest,Warren County,123,42
+PAEconomicDevelopmentRegion,Southwest,Washington County,125,42
+PAEconomicDevelopmentRegion,Northeast,Wayne County,127,42
+PAEconomicDevelopmentRegion,Southwest,Westmoreland County,129,42
+PAEconomicDevelopmentRegion,Northeast,Wyoming County,131,42
+PAEconomicDevelopmentRegion,Central,York County,133,42
