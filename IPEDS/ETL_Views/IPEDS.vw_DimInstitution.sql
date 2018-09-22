@@ -18,7 +18,7 @@ Process description for the CTE by subquery:
 result: flattened record with hierarhcy of system > Institution > campus
 	with consistent attributes of control/sector/level for all campuses in an institution
 */
-USE SLDS_ETL;
+USE OSDS_ETL;
 
 DROP VIEW IPEDS.vw_DimInstitution
 GO
@@ -39,8 +39,8 @@ WITH INSTBASE AS (
 		, cast(INSTCAT.LookupDesc as varchar(100)) [InstitutionCategory]
 		, cast(CCBASIC.LookupDesc as varchar(100)) [CarnegieClassification]
 		, CAST(NULLIF(HD.DEATHYR,-2) AS VARCHAR(10)) InstitutionCloseYr
-		, PDEIC.AgencyTypeDesc [PDEInstitutionTypeAbbr]
-		, PDEIC.PDEInstitutionType
+		, PDEIC.PDEAgencyTypeCd 
+		, PDEIC.PDEAgencyTypeDesc
 		, PDEIC.AUNumber
 	FROM IPEDS.tblHD HD
 		INNER JOIN (
@@ -53,7 +53,7 @@ WITH INSTBASE AS (
 		LEFT JOIN SHARED.vw_UniqueLookupList INSTCAT ON COALESCE(NULLIF(HD.INSTCAT,'0'),'-2') = INSTCAT.LookupCd AND UPPER(INSTCAT.LookupName)='INSTCAT'
 		LEFT JOIN SHARED.vw_UniqueLookupList CCBASIC ON COALESCE(HD.CCBASIC,'0') = CCBASIC.LookupCd AND UPPER(CCBASIC.LookupName)='CCBASIC'
 		LEFT JOIN SHARED.vw_UniqueLookupList CONTROL ON COALESCE(HD.CONTROL,'-3') = CONTROL.LookupCd AND UPPER(CONTROL.LookupName)='CONTROL'
-		LEFT JOIN IC.vw_DimLatestICInstitutionRecord PDEIC ON HD.UNITID = PDEIC.NCESIdNumber
+		LEFT JOIN PDE.tblPDEInstitutionData PDEIC ON HD.UNITID = PDEIC.NCESIdNumber_UnitID
 ), RANKED AS (
 /*Rank institution names for multi-campus institutions to determine main campus name*/
 SELECT
@@ -63,8 +63,8 @@ SELECT
 	, I.UnitID
 	, I.SystemName
 	, I.InstitutionName
-	, I.PDEInstitutionTypeAbbr
-	, I.PDEInstitutionType
+	, I.PDEAgencyTypeCd
+	, I.PDEAgencyTypeDesc
 	, I.AUNumber
 	, 	RANK() OVER(PARTITION BY InstitutionOPEID
 					ORDER BY CASE WHEN CampusOPEID='00' THEN 1 ELSE 2 end								/*00 campus should rank first*/
@@ -88,8 +88,8 @@ SELECT
 	, RANKED.CampusOPEID
 	, RANKED.UnitID
 	, RANKED.InstitutionName [CampusName]
-	, MAX(CASE WHEN RANKED.INSTITUTION_RANK = 1 THEN RANKED.PDEInstitutionType ELSE NULL END) OVER(PARTITION BY RANKED.InstitutionOPEID) PDEInstitutionType
-	, MAX(CASE WHEN RANKED.INSTITUTION_RANK = 1 THEN RANKED.PDEInstitutionTypeAbbr ELSE NULL END) OVER(PARTITION BY RANKED.InstitutionOPEID) PDEInstitutionTypeAbbr
+	, MAX(CASE WHEN RANKED.INSTITUTION_RANK = 1 THEN RANKED.PDEAgencyTypeDesc ELSE NULL END) OVER(PARTITION BY RANKED.InstitutionOPEID) PDEAgencyTypeDesc
+	, MAX(CASE WHEN RANKED.INSTITUTION_RANK = 1 THEN RANKED.PDEAgencyTypeCd ELSE NULL END) OVER(PARTITION BY RANKED.InstitutionOPEID) PDEAgencyTypeCd
 	, MAX(CASE WHEN RANKED.INSTITUTION_RANK = 1 THEN RANKED.AUNumber ELSE NULL END) OVER(PARTITION BY RANKED.InstitutionOPEID) PDEAUNumber
 
 	--, RANKED.PDEInstitutionType
@@ -162,8 +162,8 @@ SELECT DISTINCT
 		, CAST(NULLIF(I.DEATHYR,-2) AS VARCHAR(10)) [InstitutionCloseYr]
 	
 	/*PDE pennsylvania specific attributes*/
-		, HIERARCHY.PDEInstitutionType
-		, HIERARCHY.PDEInstitutionTypeAbbr
+		, HIERARCHY.PDEAgencyTypeDesc
+		, HIERARCHY.PDEAgencyTypeCd
 		, HIERARCHY.PDEAUNumber
 		, CASE WHEN PDEIC.PubSchOrBranchNumber = '0' THEN '9999' 
 			ELSE RIGHT('0000' + CAST(PDEIC.PubSchOrBranchNumber AS VARCHAR(4)),4) 
@@ -259,13 +259,13 @@ SELECT DISTINCT
 		LEFT JOIN SHARED.vw_UniqueLookupList ALLONCAM ON COALESCE(IC.ALLONCAM,'-1') = ALLONCAM.LookupCd AND UPPER(ALLONCAM.LookupName)='ALLONCAM'
 		LEFT JOIN SHARED.vw_UniqueLookupList BOARD ON COALESCE(IC.BOARD,'-1') = BOARD.LookupCd AND UPPER(BOARD.LookupName)='BOARD'
 		LEFT JOIN SHARED.vw_UniqueLookupList ROOM ON COALESCE(IC.ROOM,'-1') = ROOM.LookupCd AND UPPER(ROOM.LookupName)='ROOM'
-LEFT JOIN IC.vw_DimLatestICInstitutionRecord PDEIC ON I.UNITID = PDEIC.NCESIdNumber
+LEFT JOIN PDE.tblPDEInstitutionData PDEIC ON I.UNITID = PDEIC.NCESIdNumber_UnitID
 
 --ORDER BY InstitutionOPEID
 GO
 
 
- DROP TABLE SLDS_RPT.IPEDS.tblDimInstitution
- SELECT * INTO SLDS_RPT.IPEDS.tblDimInstitution FROM SLDS_ETL.IPEDS.vw_DimInstitution
- CREATE CLUSTERED COLUMNSTORE INDEX IX_tblDimInstitution on SLDS_RPT.IPEDS.tblDimInstitution
+ DROP TABLE OSDS_RPT.IPEDS.tblDimInstitution
+ SELECT * INTO OSDS_RPT.IPEDS.tblDimInstitution FROM OSDS_ETL.IPEDS.vw_DimInstitution
+ CREATE CLUSTERED COLUMNSTORE INDEX IX_tblDimInstitution on OSDS_RPT.IPEDS.tblDimInstitution
 
