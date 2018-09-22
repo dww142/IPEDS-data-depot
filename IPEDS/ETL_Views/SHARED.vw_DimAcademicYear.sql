@@ -6,7 +6,7 @@
     HECA/HEPI/CPI-U Index values copied from SHEEO Paper:
         http://www.sheeo.org/sites/default/files/Technical_Paper_A_HECA_1.pdf
 */
-USE [SLDS_ETL]
+USE [OSDS_ETL]
 GO
 
 DROP VIEW SHARED.[vw_DimAcademicYear]
@@ -75,6 +75,6 @@ CREATE VIEW SHARED.[vw_DimAcademicYear] as
 
 GO
 
-DROP TABLE SLDS_RPT.SHARED.tblDimAcademicYear
-SELECT * INTO SLDS_RPT.SHARED.tblDimAcademicYear FROM SLDS_ETL.SHARED.vw_DimAcademicYear 
-CREATE CLUSTERED COLUMNSTORE INDEX IX_AcademicYear_ColStore on SLDS_RPT.SHARED.tblDimAcademicYear
+DROP TABLE OSDS_RPT.SHARED.tblDimAcademicYear
+SELECT * INTO OSDS_RPT.SHARED.tblDimAcademicYear FROM OSDS_ETL.SHARED.vw_DimAcademicYear 
+CREATE CLUSTERED COLUMNSTORE INDEX IX_AcademicYear_ColStore on OSDS_RPT.SHARED.tblDimAcademicYear
