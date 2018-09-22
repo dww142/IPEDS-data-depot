@@ -8,7 +8,7 @@
 DROP VIEW IF EXISTS SHARED.vw_DimState 
 GO
 CREATE VIEW SHARED.vw_DimState AS
-	SELECT 
+	SELECT DISTINCT
 		S.StateFIPSCode as [StateFIPSCd]
 		, S.StatePostalCode as [StatePostalCd]
 		, S.StateName
@@ -21,12 +21,8 @@ CREATE VIEW SHARED.vw_DimState AS
 		, cast(case when s.StatePostalCode in ('AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY')
 				THEN 'U.S. State or D.C.' ELSE 'Territory or other Non-State' END AS VARCHAR(40)) [StateOrDCStatus]
 
-		, COUNT_BIG(*) RecordCounter
 	FROM SHARED.tblStateImport S
-		WHERE S.StateFIPSCode NOT IN ('57','98','90')
-	GROUP BY S.StateFIPSCode
-		, S.StatePostalCode
-		, S.StateName
+	WHERE S.StateFIPSCode NOT IN ('57','98','90')
 
 GO
 
@@ -34,8 +30,8 @@ GO
  /*
     ETL into the RPT Database
  */
-    DROP TABLE IF EXISTS SLDS_RPT.SHARED.tblDimState 
-    SELECT * INTO SLDS_RPT.SHARED.tblDimState  FROM SLDS_ETL.SHARED.vw_DimState 
-    CREATE CLUSTERED COLUMNSTORE INDEX IX_State_Colstore ON SLDS_RPT.SHARED.tblDimState 
+    DROP TABLE IF EXISTS OSDS_RPT.SHARED.tblDimState 
+    SELECT * INTO OSDS_RPT.SHARED.tblDimState  FROM OSDS_ETL.SHARED.vw_DimState 
+    CREATE CLUSTERED COLUMNSTORE INDEX IX_State_Colstore ON OSDS_RPT.SHARED.tblDimState 
 
 

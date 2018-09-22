@@ -7,7 +7,7 @@ This view adds an NA record for every state (000) county code (i..e, 42000 = PA-
  Base Table : SHARED.tblCountyImport 
 
 **************************************************************************************************/
-USE SLDS_ETL;
+USE OSDS_ETL;
 
 DROP VIEW IF EXISTS SHARED.vw_DimCounty
 GO
@@ -191,6 +191,6 @@ GO
  /*
     ETL into the RPT Database
  */
-    DROP TABLE IF EXISTS SLDS_RPT.SHARED.tblDimCounty
-    SELECT * INTO SLDS_RPT.SHARED.tblDimCounty FROM SLDS_ETL.SHARED.vw_DimCounty
-    CREATE CLUSTERED COLUMNSTORE INDEX IX_County_Colstore ON SLDS_RPT.SHARED.tblDimCounty
+    DROP TABLE IF EXISTS OSDS_RPT.SHARED.tblDimCounty
+    SELECT * INTO OSDS_RPT.SHARED.tblDimCounty FROM OSDS_ETL.SHARED.vw_DimCounty
+    CREATE CLUSTERED COLUMNSTORE INDEX IX_County_Colstore ON OSDS_RPT.SHARED.tblDimCounty

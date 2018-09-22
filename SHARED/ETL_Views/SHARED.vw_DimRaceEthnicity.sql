@@ -38,14 +38,14 @@ CREATE VIEW SHARED.vw_DimRaceEthnicityCode AS
 	WHERE UPPER(L.LookupName) =  'RACE OR ETHNICITY'
 
 	/*ADD NA values and IPEDS Values to view manually */
-	UNION SELECT 'NA','NA','NA',NULL
-	UNION SELECT 'UNK','Race or Ethnicity Unknown','UNK',NULL
-	UNION SELECT 'NRAL','Non-Resident Alien','NRAL',NULL
+	UNION SELECT 'NA','NA','NA'
+	UNION SELECT 'UNK','Race or Ethnicity Unknown','UNK'
+	UNION SELECT 'NRAL','Non-Resident Alien','NRAL'
 GO
 
  /*
     ETL into the RPT Database
  */
-    DROP TABLE IF EXISTS SLDS_RPT.SHARED.tblDimRaceEthnicityCode
-    SELECT * INTO SLDS_RPT.SHARED.tblDimRaceEthnicityCode FROM SLDS_ETL.SHARED.vw_DimRaceEthnicityCode
-    CREATE CLUSTERED COLUMNSTORE INDEX IX_RaceEthnicity_Colstore ON SLDS_RPT.SHARED.tblDimRaceEthnicityCode
+    DROP TABLE IF EXISTS OSDS_RPT.SHARED.tblDimRaceEthnicityCode
+    SELECT * INTO OSDS_RPT.SHARED.tblDimRaceEthnicityCode FROM OSDS_ETL.SHARED.vw_DimRaceEthnicityCode
+    CREATE CLUSTERED COLUMNSTORE INDEX IX_RaceEthnicity_Colstore ON OSDS_RPT.SHARED.tblDimRaceEthnicityCode
