@@ -136,9 +136,12 @@ def write_years_to_table(file_code, file_code_log, row_test=None):
 
 def __main__():
     '''
-    Set file_code, survey, log_date
+    Set LOG DATE before run; 
+    looks for logs for each file in list for that date; 
+    loads to DB
     '''
     surveys = settings.DOWNLOAD_SURVEY_FILE_LIST
+    # surveys = settings.SURVEY_FILES
     log_date = '2018-09-03'
 
     for survey in surveys:

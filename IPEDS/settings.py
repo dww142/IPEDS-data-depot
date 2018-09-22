@@ -6,7 +6,7 @@ import datetime as dt
 import sqlalchemy as sa
 
 SERVER_NAME = 'LOCALHOST'
-DATABASE_NAME = 'SLDS_ETL'
+DATABASE_NAME = 'OSDS_ETL'
 TARGET_SCHEMA = 'IPEDS.'
 USERNAME = 'sql_alchemy'
 PASSWORD = 'sql_alchemy'
@@ -66,8 +66,8 @@ SURVEY_FILES = {
                    'GR200': lambda year: 'GR200_%s.zip' % str(year)[-2:],
                    'GRL2':  lambda year: 'GR%s_L2.zip' % str(year),
                    'GR_PELL_SSL' : lambda year: 'GR%s_PELL_SSL.zip' % str(year),},
-    'InstitutionCharacteristics' : {#'HD':       lambda year: 'HD%s.zip' % str(year),
-                                    #'IC':       lambda year: 'IC%s.zip' % str(year),
+    'InstitutionCharacteristics' : {'HD':       lambda year: 'HD%s.zip' % str(year),
+                                    'IC':       lambda year: 'IC%s.zip' % str(year),
                                     'IC_AY':    lambda year: 'IC%s_AY.zip' % str(year),
                                     'IC_PY':    lambda year: 'IC%s_PY.zip' % str(year),
                                    },
@@ -94,17 +94,17 @@ DOWNLOAD_SURVEY_LIST = []
 
 ###### start_year = 2002 which is the 2002-2003 Academic Year for these 2 file groups:
 DOWNLOAD_SURVEY_LIST.append('InstitutionCharacteristics')
-DOWNLOAD_SURVEY_LIST.append('FallEnrollment')
-DOWNLOAD_SURVEY_LIST.append('AdmissionsTestScores')
-DOWNLOAD_SURVEY_LIST.append('AcademicLibraries')
-DOWNLOAD_SURVEY_LIST.append('EmployeesByAssignedPosition')
-DOWNLOAD_SURVEY_LIST.append('InstructionalStaffSalaries')
+# DOWNLOAD_SURVEY_LIST.append('FallEnrollment')
+# DOWNLOAD_SURVEY_LIST.append('AdmissionsTestScores')
+# DOWNLOAD_SURVEY_LIST.append('AcademicLibraries')
+# DOWNLOAD_SURVEY_LIST.append('EmployeesByAssignedPosition')
+# DOWNLOAD_SURVEY_LIST.append('InstructionalStaffSalaries')
 
 DOWNLOAD_SURVEY_FILE_LIST = {k : SURVEY_FILES[k] for k in DOWNLOAD_SURVEY_LIST}
 GET_DICTIONARIES = True
 
 START_YEAR = 2002
-END_YEAR = 2017
+END_YEAR = 2018
 SURVEY_YEAR_RANGE = range(START_YEAR, END_YEAR + 1)
 WRITE_TO_TABLE = True
 
