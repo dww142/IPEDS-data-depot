@@ -94,7 +94,7 @@ def download_file(survey, file_code, survey_year, get_dictionary=False):
                 extract_file(dictionary_request, survey, file_code, survey_year, dictionary=True)
     else:
         file_metadata = 'File Not Found'
-        print(file_metadata)
+        print(file_metadata, end='...')
     return file_metadata
 
 def consolidate_survey_files(file_code_log, file_code, row_test=None):
