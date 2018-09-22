@@ -47,3 +47,5 @@ USE OSDS_ETL;
 	GO
 	ALTER ROLE db_datawriter ADD MEMBER [sql_alchemy]
 	GO
+	ALTER ROLE db_owner ADD MEMBER [sql_alchemy]
+	GO
