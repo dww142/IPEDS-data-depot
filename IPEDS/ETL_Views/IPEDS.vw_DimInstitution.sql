@@ -139,25 +139,40 @@ SELECT DISTINCT
 		, cast(ROOM.LookupDesc as varchar(100)) [InstitutionProvidesOnCampusHousing]
 		, cast(BOARD.LookupDesc as varchar(100)) [InstitutionProvidesMealPlan]
 
-	/*GEOGRAPHY*/
-		, CAST(COALESCE(I.STABBR,'NA') AS VARCHAR(2)) AS [StatePostalCd]
-		, COALESCE(CAST(S.StateFIPSCode AS CHAR(2)),'00') StateFIPSCd
-		, CAST(coalesce(Nullif(CASE WHEN LEN(I.COUNTYCD)=4 THEN '0'+I.COUNTYCD ELSE I.COUNTYCD END,''),'-2') AS CHAR(5)) AS CountyFIPSCd
-		, CAST(COALESCE(I.CITY,'') AS VARCHAR(1000)) City
-		, CAST(COALESCE(LEFT(I.ZIP,5),'') AS VARCHAR(10)) [ZipCd]
-		, CAST(CASE WHEN '' NOT IN (I.ADDR, I.CITY, I.ZIP) THEN 
-			COALESCE(I.ADDR,'') +' '+
-			COALESCE(I.CITY,'')+', '+
-			COALESCE(I.STABBR,'')+' '+
-			COALESCE(I.ZIP,'') 
-			ELSE '' END AS VARCHAR(2000))
+	/*GEOGRAPHY
+		lot of coalescing; merging EDGE Geocoded data with directory survey file data; 
+		should result in (ideally) the latest geographic information avialable for an institution
+	*/
+	 
+		, CAST(COALESCE(S.StatePostalCode, I.STABBR,'NA') AS VARCHAR(2)) AS [StatePostalCd]
+		, COALESCE(GEO.StateFIPSCd, CAST(S.StateFIPSCode AS CHAR(2)),'00') StateFIPSCd
+		, CAST(coalesce(GEO.CountyFIPSCd,
+					Nullif(CASE WHEN LEN(I.COUNTYCD)=4 THEN '0'+I.COUNTYCD ELSE I.COUNTYCD END,'')
+					,'-2') AS CHAR(5)) AS CountyFIPSCd
+		, CAST(COALESCE(GEO.CityName,I.CITY,'') AS VARCHAR(1000)) City
+		, CAST(COALESCE(LEFT(GEO.ZipCd,5),LEFT(I.ZIP,5),'') AS VARCHAR(10)) [ZipCd]
+		, COALESCE(GEO.InstitutionAddress, 
+				CAST(CASE WHEN '' NOT IN (I.ADDR, I.CITY, I.ZIP) THEN 
+				COALESCE(I.ADDR,'') +' '+
+				COALESCE(I.CITY,'')+', '+
+				COALESCE(I.STABBR,'')+' '+
+				COALESCE(I.ZIP,'') 
+				ELSE '' END AS VARCHAR(2000)))
 			[InstitutionAddress]
 
-		, CAST(LEFT(NULLIF(I.LATITUDE,''),18) AS NUMERIC(18,4)) [Latitude]
-		, CAST(LEFT(NULLIF(I.LONGITUD,''),18) AS NUMERIC(18,4)) [Longitude]
+		, GEO.CoreBasedStatisticalAreaCd
+		, GEO.CoreBasedStatisticalAreaName
+		, GEO.CoreBasedStatisticalAreaType
 
-		, LATEST.AvgLatitude --possible to average lat/long for institutions who've reported slight variances, or blank years? 
-		, LATEST.AvgLongitude --possible to average lat/long for institutions who've reported slight variances, or blank years? 
+		, GEO.CombinedStatisticalAreaCd
+		, GEO.CombinedStatisticalAreaName
+
+		, GEO.CongresionalDistrict
+		, GEO.StateHouseDistrict
+		, GEO.StateSenateDistrict
+
+		, CAST(COALESCE(GEO.Latitude, LEFT(NULLIF(I.LATITUDE,''),18), LATEST.AvgLatitude) AS NUMERIC(18,4)) [Latitude]
+		, CAST(coalesce(GEO.Longitude, LEFT(NULLIF(I.LONGITUD,''),18), LATEST.AvgLongitude) AS NUMERIC(18,4)) [Longitude]
 
 		, CAST(NULLIF(I.DEATHYR,-2) AS VARCHAR(10)) [InstitutionCloseYr]
 	
@@ -230,7 +245,8 @@ SELECT DISTINCT
 			) LATEST ON I.UNITID = LATEST.UNITID AND I.SURVEY_YEAR = LATEST.MAX_SY
 		INNER JOIN HIERARCHY ON I.UNITID = HIERARCHY.UnitID
 		LEFT JOIN IPEDS.tblIC IC ON I.UNITID = IC.UNITID AND I.SURVEY_YEAR = IC.SURVEY_YEAR
-		LEFT JOIN SHARED.tblStateImport S ON I.STABBR = S.StatePostalCode
+		LEFT JOIN IPEDS.vw_GeocodedInstitutions GEO ON I.UNITID = GEO.UnitID
+		LEFT JOIN SHARED.tblStateImport S ON I.STABBR = S.StatePostalCode OR GEO.StateFIPSCd = S.StateFIPSCode
 	/*Get simple HD file lookups (Coalesce to NA or Unknown codes when null for each lookup)*/
 		LEFT JOIN SHARED.vw_DimLocaleCode LOCALE ON COALESCE(I.LOCALE,'-3') = LOCALE.LocalePK
 		LEFT JOIN SHARED.vw_UniqueLookupList SECTOR ON COALESCE(I.SECTOR,'99') = SECTOR.LookupCd AND upper(SECTOR.LookupName) = 'SECTOR'
