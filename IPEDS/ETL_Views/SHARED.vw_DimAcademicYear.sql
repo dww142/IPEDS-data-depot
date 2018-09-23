@@ -5,6 +5,12 @@
         https://www.usinflationcalculator.com/inflation/consumer-price-index-and-annual-percent-changes-from-1913-to-2008/
     HECA/HEPI/CPI-U Index values copied from SHEEO Paper:
         http://www.sheeo.org/sites/default/files/Technical_Paper_A_HECA_1.pdf
+    HECA is controversial: https://www.air.org/edsector-archives/blog/higher-ed-data-central-inflation-adjusted-sheeo-chart
+    
+    TODO:
+    indicator of US House/Senate controlling parties by year, similar to: https://web.education.wisc.edu/nwhillman/index.php/2017/02/01/party-control-in-congress-and-state-legislatures/
+        add presendential party by year
+        separate annual dimension to do this by state (other state annual indicators?)
 */
 USE [OSDS_ETL]
 GO
