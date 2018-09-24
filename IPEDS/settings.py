@@ -85,7 +85,6 @@ DOWNLOAD_SURVEY_LIST = []
 
 
 ###### start_year = 2003 which is the 2002-2003 Academic Year for these file groups:
-# START_YEAR = 2003
 # DOWNLOAD_SURVEY_LIST.append('UnduplicatedEnrollment')
 # DOWNLOAD_SURVEY_LIST.append('Finance')
 # DOWNLOAD_SURVEY_LIST.append('GradRates')
@@ -94,9 +93,11 @@ DOWNLOAD_SURVEY_LIST = []
 
 ###### start_year = 2002 which is the 2002-2003 Academic Year for these 2 file groups:
 DOWNLOAD_SURVEY_LIST.append('InstitutionCharacteristics')
-# DOWNLOAD_SURVEY_LIST.append('FallEnrollment')
-# DOWNLOAD_SURVEY_LIST.append('AdmissionsTestScores')
-# DOWNLOAD_SURVEY_LIST.append('AcademicLibraries')
+DOWNLOAD_SURVEY_LIST.append('FallEnrollment')
+DOWNLOAD_SURVEY_LIST.append('AdmissionsTestScores')
+DOWNLOAD_SURVEY_LIST.append('AcademicLibraries')
+
+#not sure how survey_year and academic_year align for these 2 surveys
 # DOWNLOAD_SURVEY_LIST.append('EmployeesByAssignedPosition')
 # DOWNLOAD_SURVEY_LIST.append('InstructionalStaffSalaries')
 
