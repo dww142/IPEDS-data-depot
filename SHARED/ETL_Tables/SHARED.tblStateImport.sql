@@ -4,15 +4,17 @@
 					postal and ANSI FIPS codes. 
 	Data File Source:	https://www.census.gov/geo/reference/ansi_statetables.html
 ****************************************/
+USE OSDS_ETL;
+DROP TABLE IF EXISTS SHARED.tblStateImport
 
 CREATE TABLE SHARED.tblStateImport (
 	StateFIPSCode char(2), 
 	StatePostalCode char(2), 
 	StateName varchar(75),
-	AuditAddUserName  varchar(48)  Not Null default suser_sname(),
-	AuditAddDate datetime2 Not Null	default sysdatetime(),
-	AuditChangeUserName varchar(48) Not Null default suser_sname(),
-    AuditChangeDate datetime2 Not Null default sysdatetime(),
+	AuditAddUserName  varchar(48)   Null default suser_sname(),
+	AuditAddDate datetime2  Null	default sysdatetime(),
+	AuditChangeUserName varchar(48)  Null default suser_sname(),
+    AuditChangeDate datetime2  Null default sysdatetime(),
 	PRIMARY KEY CLUSTERED(StateFIPSCode)
 )
 GO

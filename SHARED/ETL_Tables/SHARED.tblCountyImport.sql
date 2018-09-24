@@ -4,16 +4,19 @@
 					as obtained from the US Census Bureau. 
 	Data File Source: https://www.census.gov/geo/reference/codes/cou.html
 ****************************************/
+USE OSDS_ETL;
+DROP TABLE IF EXISTS SHARED.tblCountyImport ;
+
 CREATE TABLE SHARED.tblCountyImport (
 	StatePostalCode char(2), 
 	StateFIPSCode char(2), 
 	CountyFIPSCode char(3),
 	CountyName varchar(100),
 	CountyCensusClass char(10),
-	AuditAddUserName  varchar(48)  Not Null default suser_sname(),
-	AuditAddDate datetime2 Not Null	default sysdatetime(),
-	AuditChangeUserName varchar(48) Not Null default suser_sname(),
-    AuditChangeDate datetime2 Not Null default sysdatetime(),
+	AuditAddUserName  varchar(48)   Null default suser_sname(),
+	AuditAddDate datetime2  Null	default sysdatetime(),
+	AuditChangeUserName varchar(48)  Null default suser_sname(),
+    AuditChangeDate datetime2  Null default sysdatetime(),
 	PRIMARY KEY CLUSTERED(StateFIPSCode, CountyFIPSCode)
 )
 GO

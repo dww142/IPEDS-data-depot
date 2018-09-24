@@ -9,6 +9,9 @@
 	show the latest description value present for any given code. 
 
 ****************************************/
+USE OSDS_ETL;
+DROP TABLE IF EXISTS SHARED.tblLookupImport
+
 CREATE TABLE SHARED.tblLookupImport(
 	[Source] varchar(50) not null,
 	SourceYear int not null, 
@@ -18,10 +21,10 @@ CREATE TABLE SHARED.tblLookupImport(
 	LookupCategory1 varchar(100), 
 	LookupCategory2 varchar(100), 
 	LookupCategory3 varchar(100),
-	AuditAddUserName  varchar(48)  Not Null default suser_sname(),
-	AuditAddDate datetime2 Not Null	default sysdatetime(),
-	AuditChangeUserName varchar(48) Not Null default suser_sname(),
-    AuditChangeDate datetime2 Not Null default sysdatetime(),
+	AuditAddUserName  varchar(48)   Null default suser_sname(),
+	AuditAddDate datetime2  Null	default sysdatetime(),
+	AuditChangeUserName varchar(48)  Null default suser_sname(),
+    AuditChangeDate datetime2  Null default sysdatetime(),
 	
 	primary key clustered ([Source], SourceYear, LookupName, LookupCd)
 )
