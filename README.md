@@ -23,7 +23,7 @@ This project is designed for MS SQL Server at the moment, developer edition is f
 5. from the IPEDS folder - execute ipeds_downloader.py
 6. from the IPEDS folder - execute ipeds_data_loader.py
 7. execute each view creation script in SHARED\ETL_Views
-8. execute each view creation script in IPEDS\ETL_Views  
+8. execute each view creation script in IPEDS\ETL_Views - starting with vw_DimInstitution (Fact views are dependent on this view)
   
 <i>The view creation scripts also extract data from the ETL database and load to the RPT database</i>
 
