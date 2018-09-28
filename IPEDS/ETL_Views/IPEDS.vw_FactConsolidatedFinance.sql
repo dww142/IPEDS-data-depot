@@ -6,6 +6,12 @@
 
 	Field names are copied from dictionaries, need to be standardized yet
 
+    CAREFUL WITH THIS ONE - finance survey has a lot of variability over time
+        and some of the measures and elements are repetitive and overlapping; 
+        i.e., restricte, non-restricted, and totals for some types of assets/revenues
+        - current/non-current assets in some elements are not consistent over time
+        - USE AT YOUR OWN RISK (& verify)
+
 last run: 
 	(95314 rows affected) 
 	Total execution time: 00:00:14.186
