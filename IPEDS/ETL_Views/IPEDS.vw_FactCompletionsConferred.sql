@@ -229,8 +229,8 @@ WHERE
 	)
 	OR
 	(SURVEY_YEAR >= 2011
-		AND UPPER(BASE.CA_CODE) LIKE 'C%' 
-		AND UPPER(BASE.CA_CODE) NOT LIKE 'CRACE%'
+		AND UPPER(BASE.CA_CODE) LIKE 'C%' /*new codes*/
+		AND UPPER(BASE.CA_CODE) NOT LIKE 'CRACE%' /*old codes; 'DV%' derived codes don't exist in these years*/
 	)
 group by 
 		CAST(BASE.SURVEY_YEAR AS INT) 
