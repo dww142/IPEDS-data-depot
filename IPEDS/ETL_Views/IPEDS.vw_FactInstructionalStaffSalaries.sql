@@ -9,6 +9,8 @@
 		sum([Total Salary Outlays])
 		/
 		sum([Number Months Covered By Salary Outlays])
+
+TODO: source academic rank from a lookup rather than a CASE statement
 */
 USE OSDS_ETL;
 GO
