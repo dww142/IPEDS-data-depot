@@ -71,7 +71,9 @@ SURVEY_FILES = {
                                     'IC_AY':    lambda year: 'IC%s_AY.zip' % str(year),
                                     'IC_PY':    lambda year: 'IC%s_PY.zip' % str(year),
                                    },
-    'StudentFinAid' : {'SFA': lambda year: 'SFA%s%s.zip' % (str(year-1)[-2:], str(year)[-2:]),},
+    'StudentFinAid' : {'SFA': lambda year: 'SFA%s%s.zip' % (str(year-1)[-2:], str(year)[-2:]),
+                       'SFAV': lambda year: 'SFAV%s%s.zip' % (str(year-1)[-2:], str(year)[-2:]), #starts in 2014
+                      },
     'UnduplicatedEnrollment' : {'EFFY': lambda year: 'EFFY%s.zip' % str(year),
                                 'EFIA': lambda year: 'EFIA%s.zip' % str(year),},
     'InstructionalStaffSalaries' : {'SAL_IS':  lambda year: 'SAL%s_IS.zip' % str(year),
@@ -84,22 +86,23 @@ DOWNLOAD_SURVEY_LIST = []
 
 
 
-###### start_year = 2003 which is the 2002-2003 Academic Year for these file groups:
-# DOWNLOAD_SURVEY_LIST.append('UnduplicatedEnrollment')
-# DOWNLOAD_SURVEY_LIST.append('Finance')
-# DOWNLOAD_SURVEY_LIST.append('GradRates')
-# DOWNLOAD_SURVEY_LIST.append('StudentFinAid')
-# DOWNLOAD_SURVEY_LIST.append('Completions')
+# ###### start_year = 2003 which is the 2002-2003 Academic Year for these file groups:
+DOWNLOAD_SURVEY_LIST.append('UnduplicatedEnrollment')
+DOWNLOAD_SURVEY_LIST.append('Finance')
+DOWNLOAD_SURVEY_LIST.append('GradRates')
+DOWNLOAD_SURVEY_LIST.append('StudentFinAid')
+DOWNLOAD_SURVEY_LIST.append('Completions')
 
-###### start_year = 2002 which is the 2002-2003 Academic Year for these 2 file groups:
+# ###### start_year = 2002 which is the 2002-2003 Academic Year for these 2 file groups:
 DOWNLOAD_SURVEY_LIST.append('InstitutionCharacteristics')
 DOWNLOAD_SURVEY_LIST.append('FallEnrollment')
 DOWNLOAD_SURVEY_LIST.append('AdmissionsTestScores')
 DOWNLOAD_SURVEY_LIST.append('AcademicLibraries')
 
-#not sure how survey_year and academic_year align for these 2 surveys
-# DOWNLOAD_SURVEY_LIST.append('EmployeesByAssignedPosition')
-# DOWNLOAD_SURVEY_LIST.append('InstructionalStaffSalaries')
+# ###### not sure how survey_year and academic_year align for these 2 surveys
+DOWNLOAD_SURVEY_LIST.append('EmployeesByAssignedPosition')
+DOWNLOAD_SURVEY_LIST.append('InstructionalStaffSalaries')
+DOWNLOAD_SURVEY_LIST.append('OutcomeMeasures')
 
 DOWNLOAD_SURVEY_FILE_LIST = {k : SURVEY_FILES[k] for k in DOWNLOAD_SURVEY_LIST}
 GET_DICTIONARIES = True
