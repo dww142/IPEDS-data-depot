@@ -7,6 +7,9 @@
         http://www.sheeo.org/sites/default/files/Technical_Paper_A_HECA_1.pdf
     HECA is controversial: https://www.air.org/edsector-archives/blog/higher-ed-data-central-inflation-adjusted-sheeo-chart
     
+    SHEEO data adjustment indices published here (2018/2019):
+        http://www.sheeo.org/projects/shef-%E2%80%94-state-higher-education-finance
+        
     TODO:
     indicator of US House/Senate controlling parties by year, similar to: https://web.education.wisc.edu/nwhillman/index.php/2017/02/01/party-control-in-congress-and-state-legislatures/
         add presendential party by year
@@ -22,57 +25,60 @@ CREATE VIEW SHARED.[vw_DimAcademicYear] as
 		CAST(SURVEY_YEAR +1 AS INT) [AcademicYr]
 		, CAST(SURVEY_YEAR AS VARCHAR(4))+ ' - ' + CAST(SURVEY_YEAR + 1 AS VARCHAR(4)) [AcademicYrDesc]
 , CASE SURVEY_YEAR + 1 /*AcademicYear*/
-        WHEN 2003 THEN 75.07
-        WHEN 2004 THEN 77.06
-        WHEN 2005 THEN 79.68
-        WHEN 2006 THEN 82.25
-        WHEN 2007 THEN 84.59
-        WHEN 2008 THEN 87.84
-        WHEN 2009 THEN 87.52
-        WHEN 2010 THEN 88.96
-        WHEN 2011 THEN 91.77
-        WHEN 2012 THEN 93.67
-        WHEN 2013 THEN 95.04
-        WHEN 2014 THEN 96.58
-        WHEN 2015 THEN 96.69
-        WHEN 2016 THEN 97.91
-        WHEN 2017 THEN 100.00    
+        WHEN 2003 THEN 0.735738
+        WHEN 2004 THEN 0.755331
+        WHEN 2005 THEN 0.780921
+        WHEN 2006 THEN 0.806113
+        WHEN 2007 THEN 0.829072
+        WHEN 2008 THEN 0.860905
+        WHEN 2009 THEN 0.857842
+        WHEN 2010 THEN 0.871913
+        WHEN 2011 THEN 0.899435
+        WHEN 2012 THEN 0.918049
+        WHEN 2013 THEN 0.931496
+        WHEN 2014 THEN 0.946607
+        WHEN 2015 THEN 0.94773
+        WHEN 2016 THEN 0.959686
+        WHEN 2017 THEN 0.980131
+        WHEN 2018 THEN 1
      else NULL end [CPI_U]
 
     , case SURVEY_YEAR + 1
-        WHEN 2003 THEN 72.18
-        WHEN 2004 THEN 74.62
-        WHEN 2005 THEN 77.12
-        WHEN 2006 THEN 79.58
-        WHEN 2007 THEN 82.41
-        WHEN 2008 THEN 84.83
-        WHEN 2009 THEN 86.18
-        WHEN 2010 THEN 87.46
-        WHEN 2011 THEN 89.33
-        WHEN 2012 THEN 90.94
-        WHEN 2013 THEN 92.57
-        WHEN 2014 THEN 94.48
-        WHEN 2015 THEN 96.08
-        WHEN 2016 THEN 97.82
-        WHEN 2017 THEN 100.00
+        WHEN 2003 THEN 0.70514
+        WHEN 2004 THEN 0.728837
+        WHEN 2005 THEN 0.75311
+        WHEN 2006 THEN 0.777079
+        WHEN 2007 THEN 0.804641
+        WHEN 2008 THEN 0.828222
+        WHEN 2009 THEN 0.841431
+        WHEN 2010 THEN 0.854095
+        WHEN 2011 THEN 0.872125
+        WHEN 2012 THEN 0.888037
+        WHEN 2013 THEN 0.904348
+        WHEN 2014 THEN 0.923235
+        WHEN 2015 THEN 0.938933
+        WHEN 2016 THEN 0.9554
+        WHEN 2017 THEN 0.97698
+        WHEN 2018 THEN 1
         ELSE NULL END [HECA]
 
     , CASE SURVEY_YEAR + 1
-        WHEN 2003 THEN 67.58
-        WHEN 2004 THEN 70.06
-        WHEN 2005 THEN 72.82
-        WHEN 2006 THEN 76.53
-        WHEN 2007 THEN 78.71
-        WHEN 2008 THEN 82.61
-        WHEN 2009 THEN 84.46
-        WHEN 2010 THEN 85.21
-        WHEN 2011 THEN 87.21
-        WHEN 2012 THEN 88.66
-        WHEN 2013 THEN 90.05
-        WHEN 2014 THEN 92.74
-        WHEN 2015 THEN 94.74
-        WHEN 2016 THEN 96.46
-        WHEN 2017 THEN 100.00
+        WHEN 2003 THEN 0.66007
+        WHEN 2004 THEN 0.684288
+        WHEN 2005 THEN 0.711163
+        WHEN 2006 THEN 0.747489
+        WHEN 2007 THEN 0.768753
+        WHEN 2008 THEN 0.806851
+        WHEN 2009 THEN 0.824867
+        WHEN 2010 THEN 0.83225
+        WHEN 2011 THEN 0.851742
+        WHEN 2012 THEN 0.865918
+        WHEN 2013 THEN 0.879503
+        WHEN 2014 THEN 0.905788
+        WHEN 2015 THEN 0.92528
+        WHEN 2016 THEN 0.942114
+        WHEN 2017 THEN 0.973124
+        WHEN 2018 THEN 1
         ELSE NULL END [HEPI]
 
 		, CPI.[Annual Average] AverageCPI
