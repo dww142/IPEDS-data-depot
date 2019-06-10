@@ -15,18 +15,19 @@ RACIAL BREAKDown
 - only not available for the 2 year institution 100% completion
 -- available for 4 year, 100%-150% and 2 year 150% data
 
-/*WHEN 2 YR 100% COMPLETION VALUES; GET TOTALS; ELSE GET RACIAL/GENDER SUBTOTALS
+WHEN 2 YR 100% COMPLETION VALUES; GET TOTALS; ELSE GET RACIAL/GENDER SUBTOTALS
 	COHORT = 4 AND CHRTSTAT IN (22, 23, 24) THEN 'T'
 	ELSE NOT 'T'
 
 LAST RUN: 
 	(1718603 rows affected) 
 	Total execution time: 00:04:41.763
-
 */
+
 USE OSDS_ETL;
 GO
-DROP VIEW IPEDS.vw_FactGraduationRate
+
+DROP VIEW IF EXISTS IPEDS.vw_FactGraduationRate
 GO
 CREATE VIEW IPEDS.vw_FactGraduationRate AS
 
@@ -40,7 +41,7 @@ SELECT
 	--, GR_UNPIVOT.CHRTSTAT [CohortStatusCd]
 	--, GR_UNPIVOT.[CHRTSTAT DESC] [CohortStatusDesc]
 	, CAST(REPLACE(L.LookupCategory1,'T','NA') AS VARCHAR(20)) [GenderCd]
-	, CAST(REPLACE(L.LookupCategory2,'T','NA') AS VARCHAR(20)) [RaceCd]
+	, CAST(REPLACE(L.LookupCategory2,'T','NA') AS VARCHAR(20)) [IPEDSRaceCd]
 	--, L.LookupDesc
 
      , SUM(CASE CHRTSTAT WHEN '10' THEN CAST(GRTOTAL AS BIGINT) ELSE NULL END) [Revised Cohort]
@@ -227,7 +228,7 @@ GROUP BY
 GO
 
 
-DROP TABLE OSDS_RPT.IPEDS.tblFactGraduationRate
+DROP TABLE IF EXISTS OSDS_RPT.IPEDS.tblFactGraduationRate
 SELECT * INTO OSDS_RPT.IPEDS.tblFactGraduationRate FROM OSDS_ETL.IPEDS.vw_FactGraduationRate
 CREATE CLUSTERED COLUMNSTORE INDEX IX_tblFactGraduationRates_ClusteredColStore ON OSDS_RPT.IPEDS.tblFactGraduationRate
 
