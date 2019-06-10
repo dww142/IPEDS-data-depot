@@ -131,7 +131,7 @@ def write_years_to_table(file_code, file_code_log, row_test=None):
             else:
                 create_table(file_code, file_frame.columns)
                 missing = None
-            file_frame.to_sql('tbl'+file_code, settings.ENGINE, schema=settings.TARGET_SCHEMA, if_exists='append', index=False)
+            file_frame.to_sql('tbl'+file_code, settings.ENGINE, schema=settings.TARGET_SCHEMA, if_exists=settings.APPEND_OR_REPLACE, index=False)
             print(file_year, 'written.', 'Columns Added:', missing)
 
 def __main__():
@@ -142,7 +142,7 @@ def __main__():
     '''
     surveys = settings.DOWNLOAD_SURVEY_FILE_LIST
     # surveys = settings.SURVEY_FILES
-    log_date = '2018-09-03'
+    log_date = '2019-02-07'
 
     for survey in surveys:
         for file_code in surveys[survey]:
