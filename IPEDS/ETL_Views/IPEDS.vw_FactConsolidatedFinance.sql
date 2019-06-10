@@ -34,11 +34,15 @@ CREATE VIEW IPEDS.vw_FactConsolidatedFinance AS
 			ELSE 'NA'
 		END [FinanceReportingSurvey]
 	--, cast(COALESCE(F1FHA, F2FHA) as SMALLINT) [Does this institution or any of its foundations or other affiliated organizations own endowment assets ?]
+
+    /*Endowments*/
 	, CASE cast(COALESCE(F1FHA, F2FHA,'-2') as SMALLINT) 
 		WHEN 1 THEN 'Owns Endowment Assets'
 		WHEN 2 THEN 'No Endowment Assets'
 		ELSE 'Not Applicable'
 		END [OwnsEndowmentAssets]
+    , cast(COALESCE(F1H01, F2H01) as bigint) EndowmentStartOfYear
+    , cast(COALESCE(F1H02, F2H02) as bigint) EndowmentEndOfYear
 
 	/*REVENUES*/
 		, CAST(COALESCE(F1B01, F2D01, F3D01) AS BIGINT) [Tuition and Fees]
@@ -116,10 +120,12 @@ CREATE VIEW IPEDS.vw_FactConsolidatedFinance AS
 
 
 FROM IPEDS.vw_DimInstitution I
+	CROSS JOIN SHARED.vw_DimAcademicYear AY 
 /*outer join all 3 finance surveys; coalesce values into a single consistent structure for comparisons*/
-		LEFT JOIN IPEDS.tblF1_GASB F1 ON I.UnitID = F1.UNITID
-		LEFT JOIN IPEDS.tblF2_FASB F2 ON I.UnitID = F2.UNITID
-		LEFT JOIN IPEDS.tblF3_PFP F3 ON I.UnitID = F3.UNITID 
+		LEFT JOIN IPEDS.tblF1_GASB F1 ON I.UnitID = F1.UNITID AND F1.SURVEY_YEAR = AY.AcademicYr
+		LEFT JOIN IPEDS.tblF2_FASB F2 ON I.UnitID = F2.UNITID AND F2.SURVEY_YEAR = AY.AcademicYr
+		LEFT JOIN IPEDS.tblF3_PFP F3 ON I.UnitID = F3.UNITID  AND F3.SURVEY_YEAR = AY.AcademicYr
+
 
 
 WHERE COALESCE(F1.UNITID, F2.UNITID, F3.UNITID) IS NOT NULL
