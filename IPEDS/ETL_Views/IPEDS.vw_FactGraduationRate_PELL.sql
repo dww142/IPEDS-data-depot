@@ -1,6 +1,6 @@
 USE OSDS_ETL;
 GO
-DROP VIEW IF EXISTS IPEDS.vw_FactGraduationRates_PELL
+DROP VIEW IF EXISTS IPEDS.vw_FactGraduationRate_PELL
 GO
 
 CREATE VIEW IPEDS.vw_FactGraduationRate_PELL AS
@@ -8,7 +8,14 @@ CREATE VIEW IPEDS.vw_FactGraduationRate_PELL AS
 	SELECT
 		GP_UP.SURVEY_YEAR [AcademicYr]
 		, GP_UP.UNITID [UnitID]
-		, GP_UP.PSGRTYPE [CohortType]
+		, GP_UP.PSGRTYPE [CohortTypeCd]
+        , CASE GP_UP.PSGRTYPE
+                WHEN '1' THEN 'Total cohort (Bachelor''s and other degree/certificate seeking) - four-year institutions'
+                WHEN '2' THEN 'Bachelor''s degree seeking cohort - four-year institutions'
+                WHEN '3' THEN 'Other degree/certificate seeking cohort - four-year institutions'
+                WHEN '4' THEN 'Degree/certificate seeking cohort (less than four-year institutions)'
+                ELSE 'n/a'
+            END [CohortTypeDesc]
 		, L.LookupCategory1 [PellStatus]
 		, L.LookupCategory2 [StaffordLoanStatus]
 		, max(CASE WHEN L.LookupCd LIKE '%REVCT' THEN GP_UP.GP_VALUE else null end) [RevisedCohort]
