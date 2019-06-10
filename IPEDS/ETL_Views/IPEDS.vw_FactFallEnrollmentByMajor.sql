@@ -24,7 +24,7 @@ Logical Key of View: AcademicYr, UnitID, FallEnrollDetailFK, FallAttendanceStatu
 USE OSDS_ETL;
 GO
 
-DROP VIEW IPEDS.vw_FactFallEnrollmentByMajorCIP
+DROP VIEW IF EXISTS IPEDS.vw_FactFallEnrollmentByMajorCIP
 go
 create VIEW IPEDS.vw_FactFallEnrollmentByMajorCIP as 
 	SELECT 
@@ -32,10 +32,11 @@ create VIEW IPEDS.vw_FactFallEnrollmentByMajorCIP as
 		, BASE.UNITID [UnitID]
 		, I.StateFIPSCd
 		, I.CountyFIPSCd
-		, BASE.CIPCODE [CipCdFK]
+		
+		, CAST(BASE.CIPCODE AS VARCHAR(10)) [CipCdFK]
 	
-		, BASE.LSTUDY [FallEnrollDetailFK]
-		, BASE.SECTION [FallAttendanceStatusFK]
+		, CAST(BASE.LSTUDY AS SMALLINT) [FallEnrollDetailFK]
+		, CAST(BASE.SECTION AS SMALLINT) [FallAttendanceStatusFK]
 
 		, L.LookupCategory1 [GenderCd]
 		, l.LookupCategory2 [IPEDSRaceCd]
@@ -45,11 +46,11 @@ create VIEW IPEDS.vw_FactFallEnrollmentByMajorCIP as
 			SELECT DISTINCT
 				CAST(EFCP_UNPIVOT.SURVEY_YEAR AS INT) SURVEY_YEAR
 				, CAST(EFCP_UNPIVOT.UNITID AS INT) UNITID
-				, CAST(EFCP_UNPIVOT.EFCIPLEV AS SMALLINT) EFCIPLEV
+				, EFCP_UNPIVOT.EFCIPLEV
 				, CAST(EFCP_UNPIVOT.CIPCODE AS VARCHAR(10)) CIPCODE
-				, CAST(EFCP_UNPIVOT.LINE AS SMALLINT) LINE
-				, CAST(EFCP_UNPIVOT.SECTION AS SMALLINT) SECTION
-				, CAST(EFCP_UNPIVOT.LSTUDY AS SMALLINT) LSTUDY
+				, EFCP_UNPIVOT.LINE  LINE
+				, EFCP_UNPIVOT.SECTION SECTION
+				, EFCP_UNPIVOT.LSTUDY LSTUDY
 				, EFCP_CODE
 				, CAST(ENROLLMENT AS BIGINT) ENROLLMENT
 			FROM (
@@ -119,7 +120,7 @@ create VIEW IPEDS.vw_FactFallEnrollmentByMajorCIP as
 											AND UPPER(L.LookupName) = 'EFCP_CODES'
 											AND UPPER(L.LookupCategory1) <> 'T'
 											AND UPPER(L.LookupCategory2) <> 'T'
-	WHERE 
+	WHERE
 		(	BASE.SURVEY_YEAR <= 2007
 			AND UPPER(BASE.EFCP_CODE) LIKE 'EFRACE%'
 		)
@@ -149,7 +150,6 @@ create VIEW IPEDS.vw_FactFallEnrollmentByMajorCIP as
 GO
 
 
-DROP TABLE OSDS_RPT.IPEDS.tblFactFallEnrollmentByMajorCIP
+DROP TABLE  IF EXISTS OSDS_RPT.IPEDS.tblFactFallEnrollmentByMajorCIP
 SELECT * INTO OSDS_RPT.IPEDS.tblFactFallEnrollmentByMajorCIP FROM OSDS_ETL.IPEDS.vw_FactFallEnrollmentByMajorCIP
 CREATE CLUSTERED COLUMNSTORE INDEX IX_FallEnrollCIP ON OSDS_RPT.IPEDS.tblFactFallEnrollmentByMajorCIP
-
