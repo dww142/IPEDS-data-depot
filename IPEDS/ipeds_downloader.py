@@ -69,7 +69,7 @@ def download_file_request(file_url):
         
     return data_req
 
-def download_file(survey, file_code, survey_year, get_dictionary=False):
+def download_file(survey, file_code, survey_year, get_dictionary=False, get_data=True):
     '''
     Build the zip file url for the specified file and year
     optionally do the same for the dictionary for that year
@@ -77,24 +77,27 @@ def download_file(survey, file_code, survey_year, get_dictionary=False):
     # format file name and create url
     formatter = settings.SURVEY_FILES[survey][file_code]
     data_file_name = formatter(survey_year)
-    data_file_url = os.path.join(settings.IPEDS_BASE_URL, data_file_name)
-
-    data_request = download_file_request(data_file_url)
 
     file_metadata = ''
-    if data_request.ok:
-        file_metadata = extract_file(data_request, survey, file_code, survey_year)
-        print('Downloaded', end='... ')
-        # only attemp to get dictionary if data request was successful
-        if get_dictionary:
-            dictionary_file_url = os.path.join(settings.IPEDS_BASE_URL, data_file_name[:-4]+'_Dict.zip')
-            # dictionary_request = requests.get(dictionary_file_url)
-            dictionary_request = download_file_request(dictionary_file_url)
-            if dictionary_request.ok:
-                extract_file(dictionary_request, survey, file_code, survey_year, dictionary=True)
-    else:
-        file_metadata = 'File Not Found'
-        print(file_metadata, end='...')
+    if get_data:
+        data_file_url = os.path.join(settings.IPEDS_BASE_URL, data_file_name)
+        data_request = download_file_request(data_file_url)
+
+        file_metadata = ''
+        if data_request.ok:
+            file_metadata = extract_file(data_request, survey, file_code, survey_year)
+            print('Downloaded Data', end='... ')
+        else:
+            file_metadata = 'File Not Found'
+            print(file_metadata, end='...')
+
+    if get_dictionary:
+        dictionary_file_url = os.path.join(settings.IPEDS_BASE_URL, data_file_name[:-4]+'_Dict.zip')
+        dictionary_request = download_file_request(dictionary_file_url)
+        if dictionary_request.ok:
+            extract_file(dictionary_request, survey, file_code, survey_year, dictionary=True)
+            print('Downloaded Dictionary', end='... ')
+
     return file_metadata
 
 def consolidate_survey_files(file_code_log, file_code, row_test=None):
@@ -169,13 +172,16 @@ def __main__():
             #loop through the desired years, for that file:
             for survey_year in survey_year_range:
                 print("Download Start: ", survey, file_code, survey_year, end='... ')
-                meta_result = download_file(survey, file_code, survey_year, get_dictionary=settings.GET_DICTIONARIES)
+                # meta_result = download_file(survey, file_code, survey_year, get_dictionary=settings.GET_DICTIONARIES)
+                meta_result = download_file(survey, file_code, survey_year, get_dictionary=True, get_data=False) #Dictionaries only
                 print("Done.")
                 log[survey][file_code][survey_year] = meta_result
 
             log_file = f'{survey}_{file_code}_{settings.DOWNLOAD_DATE}_log.json'
-            with open(os.path.join(settings.DATA_DIRECTORY, survey, file_code, settings.DOWNLOAD_DATE, log_file), 'w') as survey_log:
-                json.dump(log, survey_log, indent=2)
+            # check if exists first; if no files downloaded, path will not exist for file code
+            if os.path.exists(os.path.join(settings.DATA_DIRECTORY, survey, file_code, settings.DOWNLOAD_DATE)):
+                with open(os.path.join(settings.DATA_DIRECTORY, survey, file_code, settings.DOWNLOAD_DATE, log_file), 'w') as survey_log:
+                    json.dump(log, survey_log, indent=2)
 
     # download_log = {settings.DOWNLOAD_DATE : log}
     # print(json.dumps(download_log, indent=2))
