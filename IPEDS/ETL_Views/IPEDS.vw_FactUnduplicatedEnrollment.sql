@@ -25,7 +25,7 @@ CREATE VIEW IPEDS.vw_FactUnduplicatedEnrollment AS
 		--, L.LookupCd
 		--, L.LookupDesc
 		, L.LookupCategory1 [GenderCd]
-		, L.LookupCategory2 [RaceCd]
+		, L.LookupCategory2 [IPEDSRaceCd]
 
 		, SUM(BASE.ENROLLMENT) UnduplicatedEnrollment
 	
